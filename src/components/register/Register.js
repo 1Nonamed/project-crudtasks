@@ -30,7 +30,7 @@ function Register({ handleMessage, handleView, handleUser }) {
 
   return (
     <div>
-      <div>Hi, I'm Login</div>
+      <div>Hi, I'm Register</div>
       <form onInput={handleInput} onSubmit={registerUser}>
         <input type="text" name="name" placeholder="name" />
         <input type="text" name="lastname" placeholder="lastname" />
