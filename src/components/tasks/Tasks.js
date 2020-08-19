@@ -2,9 +2,19 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import "../../App.css";
-import Snackbar from "@material-ui/core/Snackbar";
+
+import { makeStyles } from "@material-ui/core/styles";
+import {
+  Grid,
+  Paper,
+  Snackbar,
+  Typography,
+  TextField,
+  Button,
+  Box,
+} from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-import Popper from "@material-ui/core/Popper";
+import Pagination from "@material-ui/lab/Pagination";
 
 function Tasks({ handleMessage, handleView, handleUser, message }) {
   const [tasks, setTasks] = useState([]);
@@ -12,6 +22,8 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
   const [editTask, setEditTask] = useState({});
   const [filterDate, setFilterDate] = useState("");
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState();
+  const [hasNextPage, setHasNextPage] = useState();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -20,14 +32,19 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
 
   const getTasks = async () => {
     try {
-      let url = `/tasks?page=1&limit=20`;
+      let url = `/tasks?page=${page}&limit=20`;
+      console.log(url);
       const res = await axios.get(url);
+      console.log(res);
+      setPage(res.data.page)
+      setHasNextPage(res.data.hasNextPage)
+      setTotalPages(res.data.totalPages);
       setTasks(res.data.results);
     } catch (error) {
       console.log("No hay tareas :/");
     }
   };
-
+  
   const createTask = async (e) => {
     try {
       e.preventDefault();
@@ -99,6 +116,15 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
       return;
     }
     setOpen(false);
+  };
+
+  const handlePage = (page) => {
+    if (hasNextPage) {
+      setPage(page + 1)
+      console.log(page);
+    } else {
+      console.log("Hay un error");
+    }
   };
 
   const onChangeSelect = (task) => {
@@ -175,7 +201,7 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
         ></input>
         <button type="submit">Update</button>
       </form>
-      
+
       <div>Filter</div>
       <select onChange={(event) => setFilterDate(event.target.value)}>
         <option value="all">All</option>
@@ -185,6 +211,11 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
         <option value="complete">Completed</option>
         <option value="noComplete">Pending</option>
       </select>
+      <Pagination
+        count={totalPages}
+        page={page}
+        onChange={(page) => handlePage(page)}
+      />
       <div>
         {tasks
           .filter((task) => onChangeSelect(task))
@@ -198,6 +229,7 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
                   Editar
                 </button>
                 <button onClick={() => deleteTask(task._id)}>Eliminar</button>
+                <input name="taskstatus" type="checkbox" />
               </div>
             );
           })}
