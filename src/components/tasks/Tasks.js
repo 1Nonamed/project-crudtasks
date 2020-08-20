@@ -137,12 +137,17 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
     let startOfNextWeek = moment(endOfWeek).add(1, "seconds");
     let endOfNextWeek = moment(endOfWeek).add(7, "days");
     switch (filterDate) {
+      case "old":
+        if(moment(task.date).isBefore(today)) {
+          return true
+        }
+        return false
       case "today":
         if (moment(task.date).isSame(today, "day")) {
           return true;
         }
         return false;
-      case "week":
+      case "current week":
         if (moment(task.date).isBetween(startOfWeek, endOfWeek)) {
           return true;
         }
@@ -152,12 +157,12 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
           return true;
         }
         return false;
-      case "complete":
+      case "completed":
         if (task.is_completed) {
           return true;
         }
         return false;
-      case "noComplete":
+      case "pending":
         if (!task.is_completed) {
           return true;
         }
@@ -169,7 +174,7 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
 
   return (
     <div>
-      <Menu filterDate={filterDate} onChangeSelect={onChangeSelect} />
+      <Menu filterDate={filterDate} onChangeSelect={onChangeSelect} setFilterDate={setFilterDate}/>
       <Snackbar
         anchorOrigin={{
           vertical: "top",
@@ -234,16 +239,6 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
           Update
         </Button>
       </form>
-
-      <div>Filter</div>
-      <select onChange={(event) => setFilterDate(event.target.value)}>
-        <option value="all">All</option>
-        <option value="today">Today</option>
-        <option value="week">Current Week</option>
-        <option value="nextWeek">Next Week</option>
-        <option value="complete">Completed</option>
-        <option value="noComplete">Pending</option>
-      </select>
       <Pagination
         count={totalPages}
         page={page}

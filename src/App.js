@@ -6,7 +6,7 @@ import Tasks from "./components/tasks/Tasks";
 
 function App() {
   const [user, setUser] = useState({});
-  const [view, setView] = useState("tasks");
+  const [view, setView] = useState("login");
   const [message, setMessage] = useState({type: "success", message: ""});
   const [open, setOpen] = useState(false);
 

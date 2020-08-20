@@ -3,6 +3,7 @@ import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import {
+  Box,
   Drawer,
   Button,
   List,
@@ -27,6 +28,12 @@ import {
 } from "@material-ui/icons";
 
 const useStyles = makeStyles({
+  root: {
+    flexGrow: 1,
+  },
+  title: {
+    flexGrow: 1,
+  },
   list: {
     width: 250,
   },
@@ -35,9 +42,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MenuFn() {
+export default function MenuFn({setFilterDate}) {
   const classes = useStyles();
-  const [state, setState] = useState({left: false});
+  const [state, setState] = useState({ left: false });
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -59,7 +66,7 @@ export default function MenuFn() {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        <ListItem button>
+        <ListItem button onClick={() => setFilterDate("all")}>
           <ListItemIcon>
             <Home />
           </ListItemIcon>
@@ -68,8 +75,17 @@ export default function MenuFn() {
       </List>
       <Divider />
       <List>
+        <ListItem button onClick={() => setFilterDate("old")}>
+          <ListItemIcon>
+            <Home />
+          </ListItemIcon>
+          <ListItemText primary="Old Tasks" />
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
         {["Today", "Current Week"].map((text, index) => (
-          <ListItem button key={text}>
+          <ListItem button key={text} onClick={() => setFilterDate(text.toLowerCase())}>
             <ListItemIcon>
               {index % 2 === 0 ? <Today /> : <DateRange />}
             </ListItemIcon>
@@ -79,7 +95,7 @@ export default function MenuFn() {
       </List>
       <Divider />
       <List>
-        <ListItem button>
+        <ListItem button onClick={() => setFilterDate("nextWeek")}>
           <ListItemIcon>
             <NextWeek />
           </ListItemIcon>
@@ -89,7 +105,7 @@ export default function MenuFn() {
       <Divider />
       <List>
         {["Completed", "Pending"].map((text, index) => (
-          <ListItem button key={text}>
+          <ListItem button key={text} onClick={() => setFilterDate(text.toLowerCase())}>
             <ListItemIcon>
               {index % 2 === 0 ? <EventAvailable /> : <EventBusy />}
             </ListItemIcon>
@@ -101,7 +117,7 @@ export default function MenuFn() {
   );
 
   return (
-    <div>
+    <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -110,7 +126,7 @@ export default function MenuFn() {
             color="inherit"
             aria-label="menu"
           >
-            <Menu onClick={toggleDrawer("left", true)}/>
+            <Menu onClick={toggleDrawer("left", true)} />
           </IconButton>
           <Typography variant="h6" component="h1" className={classes.title}>
             Task Manager
@@ -118,15 +134,13 @@ export default function MenuFn() {
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
-      
-          <Drawer
-            anchor={"left"}
-            open={state["left"]}
-            onClose={toggleDrawer("left", false)}
-          >
-            {list("left")}
-          </Drawer>
-        
+      <Drawer
+        anchor={"left"}
+        open={state["left"]}
+        onClose={toggleDrawer("left", false)}
+      >
+        {list("left")}
+      </Drawer>
     </div>
   );
 }
