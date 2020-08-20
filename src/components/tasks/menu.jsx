@@ -1,63 +1,98 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import axios from "axios";
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import {
+  Drawer,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+} from "@material-ui/core";
+
+import {
+  Menu,
+  Home,
+  Today,
+  DateRange,
+  NextWeek,
+  EventAvailable,
+  EventBusy,
+} from "@material-ui/icons";
 
 const useStyles = makeStyles({
   list: {
     width: 250,
   },
   fullList: {
-    width: 'auto',
+    width: "auto",
   },
 });
 
-export default function TemporaryDrawer() {
+export default function MenuFn() {
   const classes = useStyles();
-  const [state, setState] = React.useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
+  const [state, setState] = useState({left: false});
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
       return;
     }
-
     setState({ ...state, [anchor]: open });
   };
 
   const list = (anchor) => (
     <div
       className={clsx(classes.list, {
-        [classes.fullList]: anchor === 'top' || anchor === 'bottom',
+        [classes.fullList]: anchor === "top" || anchor === "bottom",
       })}
       role="presentation"
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+        <ListItem button>
+          <ListItemIcon>
+            <Home />
+          </ListItemIcon>
+          <ListItemText primary="All Tasks" />
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        {["Today", "Current Week"].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <span>Home</span> : <span>Mail</span>}</ListItemIcon>
+            <ListItemIcon>
+              {index % 2 === 0 ? <Today /> : <DateRange />}
+            </ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
       </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+        <ListItem button>
+          <ListItemIcon>
+            <NextWeek />
+          </ListItemIcon>
+          <ListItemText primary="Next Week" />
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        {["Completed", "Pending"].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <span>Inbox</span> : <span>Mail</span>}</ListItemIcon>
+            <ListItemIcon>
+              {index % 2 === 0 ? <EventAvailable /> : <EventBusy />}
+            </ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
@@ -67,14 +102,31 @@ export default function TemporaryDrawer() {
 
   return (
     <div>
-      {['left', 'right', 'top', 'bottom'].map((anchor) => (
-        <React.Fragment key={anchor}>
-          <Button onClick={toggleDrawer(anchor, true)}>{anchor}</Button>
-          <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
-            {list(anchor)}
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+          >
+            <Menu onClick={toggleDrawer("left", true)}/>
+          </IconButton>
+          <Typography variant="h6" component="h1" className={classes.title}>
+            Task Manager
+          </Typography>
+          <Button color="inherit">Login</Button>
+        </Toolbar>
+      </AppBar>
+      
+          <Drawer
+            anchor={"left"}
+            open={state["left"]}
+            onClose={toggleDrawer("left", false)}
+          >
+            {list("left")}
           </Drawer>
-        </React.Fragment>
-      ))}
+        
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 import "../../App.css";
+import Menu from "./Menu";
 
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -15,6 +16,8 @@ import {
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import Pagination from "@material-ui/lab/Pagination";
+
+import { Edit, Delete } from "@material-ui/icons";
 
 function Tasks({ handleMessage, handleView, handleUser, message }) {
   const [tasks, setTasks] = useState([]);
@@ -36,15 +39,15 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
       console.log(url);
       const res = await axios.get(url);
       console.log(res);
-      setPage(res.data.page)
-      setHasNextPage(res.data.hasNextPage)
+      setPage(res.data.page);
+      setHasNextPage(res.data.hasNextPage);
       setTotalPages(res.data.totalPages);
       setTasks(res.data.results);
     } catch (error) {
       console.log("No hay tareas :/");
     }
   };
-  
+
   const createTask = async (e) => {
     try {
       e.preventDefault();
@@ -120,7 +123,7 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
 
   const handlePage = (page) => {
     if (hasNextPage) {
-      setPage(page + 1)
+      setPage(page + 1);
       console.log(page);
     } else {
       console.log("Hay un error");
@@ -166,6 +169,7 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
 
   return (
     <div>
+      <Menu filterDate={filterDate} onChangeSelect={onChangeSelect} />
       <Snackbar
         anchorOrigin={{
           vertical: "top",
@@ -181,9 +185,29 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
       </Snackbar>
       <div>Hi, I'm tasks</div>
       <form onSubmit={createTask} onInput={handleInputTask}>
-        <input type="text" name="content" placeholder="Tarea" />
-        <input type="date" name="date" />
-        <button type="submit">Send</button>
+        <Box display="flex">
+          <Box mr={1}>
+            <TextField
+              type="text"
+              name="content"
+              label="Task"
+              variant="outlined"
+              margin="dense"
+            />
+          </Box>
+          <Box ml={1}>
+            <TextField
+              type="date"
+              name="date"
+              label="Task Date"
+              variant="outlined"
+              margin="dense"
+            />
+          </Box>
+        </Box>
+        <Button type="submit" variant="contained" color="primary">
+          Send Task
+        </Button>
       </form>
 
       <div>Update Task</div>
@@ -193,13 +217,22 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
           name="content"
           placeholder="Tarea"
           defaultValue={editTask.content}
-        ></input>
-        <input
-          type="date"
-          name="date"
-          defaultValue={moment(editTask.date).add(1, "h").format("YYYY-MM-DD")}
-        ></input>
-        <button type="submit">Update</button>
+        />
+        <Box ml={1}>
+          <TextField
+            type="date"
+            name="date"
+            defaultValue={moment(editTask.date)
+              .add(1, "h")
+              .format("YYYY-MM-DD")}
+            label="Task Date"
+            variant="outlined"
+            margin="dense"
+          />
+        </Box>
+        <Button type="submit" variant="contained" color="primary">
+          Update
+        </Button>
       </form>
 
       <div>Filter</div>
@@ -224,11 +257,9 @@ function Tasks({ handleMessage, handleView, handleUser, message }) {
               <div key={i} className="d-flex">
                 <div>{task.content}</div>
                 <div>{moment(task.date).format("YYYY-MM-DD")}</div>
-                <button variant="contained" onClick={() => getTask(task)}>
-                  {" "}
-                  Editar
-                </button>
-                <button onClick={() => deleteTask(task._id)}>Eliminar</button>
+
+                <Edit onClick={() => getTask(task)} />
+                <Delete onClick={() => deleteTask(task._id)} />
                 <input name="taskstatus" type="checkbox" />
               </div>
             );
